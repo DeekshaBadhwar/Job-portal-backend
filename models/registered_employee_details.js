@@ -3,14 +3,14 @@ const Sequelize=require('sequelize')
 const  sequelize= require('../util/database')
 
 const Registered_employees_details =sequelize.define('Registered_employees_details',{
-   employees_deatails_Id:{
+   id:{
             type:Sequelize.INTEGER,
             primaryKey:true,  
             autoIncrement:true
     },
-
     contact:{
-        type:Sequelize.INTEGER
+        type:Sequelize.INTEGER,
+       
     },
     nationality:{
         type:Sequelize.STRING,

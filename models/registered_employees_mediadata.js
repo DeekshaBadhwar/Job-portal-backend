@@ -12,6 +12,4 @@ const Registered_employees_mediadata =sequelize.define('Registered_employees_med
         type:Sequelize.STRING,
     }
 })
-
-
 module.exports=Registered_employees_mediadata
