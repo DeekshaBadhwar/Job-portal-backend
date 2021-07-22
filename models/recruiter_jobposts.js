@@ -18,10 +18,10 @@ const Recruiters_jobposts =sequelize.define('recruiters_jobposts',{
         type:Sequelize.STRING,
     },
    job_location:{
-        type:Sequelize.INTEGER
+        type:Sequelize.STRING
     },
   package:{
-        type:Sequelize.STRING
+        type:Sequelize.INTEGER
     },
     job_type:{
         type:Sequelize.STRING

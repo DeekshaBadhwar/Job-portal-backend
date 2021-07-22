@@ -26,9 +26,7 @@ const Registered_recruiters =sequelize.define('Registered_recruiters',{
     password:{
         type:Sequelize.STRING
     },
-    technologies:{
-        type:Sequelize.STRING
-    }
+   
 })
 
 

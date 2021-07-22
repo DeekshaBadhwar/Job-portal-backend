@@ -3,7 +3,7 @@ const Sequelize=require('sequelize')
 const  sequelize= require('../util/database')
 
 const Registered_employees =sequelize.define('Registered_employees',{
-    employees_deatils_Id:{
+    id:{
             type:Sequelize.INTEGER,
             primaryKey:true,  
             autoIncrement:true
