@@ -2,13 +2,13 @@ var express=require('express')
 var router=express.Router()
 var pic_upload=require('../controllers/profile_pic')
 
+const verify = require('../middleware/jwtVerifyToken')
 var userCtrl=require('../controllers/userControllers')
-
 
 router.post('/employees',userCtrl.employees)
 router.post('/edetails',userCtrl.employee_details)
 router.post('/media',pic_upload.single('filename'),userCtrl.media_data)
-router.get('/findemployees/:id',userCtrl.get_employees)
+router.get('/findemployees/:id',verify.verfiytoken,userCtrl.get_employees)
 router.put('/employeeupdate/:id',userCtrl.update_employee)
 router.put('/updatedetails/:employees_details_Id',userCtrl.update_details)
 router.post('/postjobs',userCtrl.postjobs)

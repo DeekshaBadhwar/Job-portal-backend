@@ -7,24 +7,49 @@ const registered_employee_details=db.registered_employee_details
 const registered_employees=db.registered_employees
 const registered_recruiters=db.registered_recruiters
 const registered_employees_mediadata=db.registered_employees_mediadata
+const jwt =require('jsonwebtoken')
 
-exports.employees=(req,res)=>{
-    const employees={
-    
-                id:req.body.id,
-                email:req.body.email,
-                first_name:req.body.first_name,
-                last_name:req.body.last_name,
-                gender:req.body.gender,
-                password:req.body.password
+const  {
+    auth_register_employee,
+    auth_register_employee_details,
+    update_register_employee,
+    auth_applied_jobs
+}=require('../validator/auth')
+
+const bcrypt=require('bcrypt')
+exports.employees=async (req,res)=>{
+    try{ 
+        const valid=await auth_register_employee.validateAsync(req.body)
+        const password=req.body.password
+         const epassword = await bcrypt.hash(password, 10);
+        const employees={    
+                id:valid.id,
+                email:valid.email,
+                first_name:valid.first_name,
+                last_name:valid.last_name,
+                gender:valid.gender,
+                password:epassword
             }
     registered_employees.create(employees).
     then((data)=>{
-        res.send(data)
-    }).catch(err=>{
-        res.send(err)
-    })
-    }
+        return res.status(200).send({
+            status: 200,
+            data: data,
+            message: "User is registered Successfully",
+            token: jwt.sign({ id: data.id }, "SECRETKEY007", {
+                expiresIn: "60m",
+              }),
+          });
+        });
+      } catch (error) {
+        return res.status(401).send({
+          status: 401,
+          message: "there is some error in registered",
+          error: error.message,
+        });
+      }
+    };
+    
 
     exports.employee_details=(req,res)=>{
         console.log(req.body)
