@@ -17,8 +17,6 @@ router.post('/reclogin',passport.authenticate('local-recruiter',{
   session: false
 }),userCtrl.recriterlogin);
 
-
-approuter.get('/profile',authenticateJWT.verfiytoken,userCtrl.allrecruiter)
 router.get('/applicant',authenticateJWT.verifytoken,userCtrl.applicants);
 router.get('/findemployees',verify.verfiytoken,userCtrl.get_employees)
 router.put('/employeeupdate/:id',userCtrl.update_employee)

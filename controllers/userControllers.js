@@ -403,10 +403,10 @@ data:recriter
   exports.applicants = async (req,res)=>{
     try{
     const details = await applied_jobs.findOne({where:{id:id.id},
-        include:registered_employee_data_model});
+        include:registered_employees});
     return res.status(200).send({
         status:200,
-        message:"all the job seekers",
+        message:"all the job job apantplic",
         data:details
     })
 }
@@ -438,23 +438,3 @@ exports.appliedjobs=(req,res)=>{
         res.send(err)
     })
 }
-
-//all ecruiter
-exports.allrecruiter = async (req, res) => {
-    try {
-      const details = await registered_recruiters.findAll({
-        where: { id: id.id }
-      });
-      return res.status(200).send({
-        status: 200,
-        message: "all the Recruiter",
-        data: details,
-      });
-    } catch (error) {
-      return res.status(401).send({
-        status: 401,
-        messgae: "there error",
-        error: error,
-      });
-    }
-  };
