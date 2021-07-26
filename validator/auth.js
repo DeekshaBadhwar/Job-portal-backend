@@ -16,7 +16,7 @@ const auth_register_employee_details = joi.object({
  hometown:joi.string().required().lowercase(),
  currentlocation:joi.string().required().lowercase(),
  qualification:joi.string().required().lowercase(),
- technologys:joi.string().required().lowercase(),
+ technologies:joi.string().required().lowercase(),
  experience:joi.string().required()
 })
 
@@ -36,9 +36,43 @@ const auth_applied_jobs = joi.object({
     package:joi.string().required(),
     job_type:joi.string().required(),
 })
+const auth_recruiter_register = joi.object({
+    
+    company_name:joi.string().required(),
+    email:joi.string().required(),
+    industry_experience:joi.string().required(),
+    technologies:joi.string().required(),
+    mobile_number:joi.number().required(),
+    company_website:joi.string().required(),
+    password:joi.string().min(5).required(),
+
+})
+
+const auth_recruiter_update = joi.object({
+    company_name:joi.string().required(),
+    email:joi.string().required(),
+    industry_experience:joi.string().required(),
+    technologys:joi.string().required(),
+    mobile_number:joi.number().required(),
+    company_website:joi.string().required(),
+})
+
+const auth_recruiter_jobpost = joi.object({
+    job_role:joi.string().required(),
+    experience:joi.string().required(),
+    skills:joi.string().required(),
+    job_location:joi.string().required(),
+    package:joi.string().required(),
+    job_type:joi.string().required(),
+})
+
+    
 
 module.exports = {
     auth_register_employee,
+    auth_recruiter_register,
+    auth_recruiter_update,
+    auth_recruiter_jobpost,
     auth_register_employee_details,
     update_register_employee,
     auth_applied_jobs

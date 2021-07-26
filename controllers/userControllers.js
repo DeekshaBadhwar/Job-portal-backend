@@ -1,6 +1,9 @@
 const sequelize=require('../util/database')
 const db=require('../models')
 const { Sequelize } = require('sequelize')
+const passport=require('passport')
+require('../util/verifyemployee')
+require('../util/verifyrecruiter')
 const applied_jobs=db.applied_jobs
 const recruiters_jobposts =db.recruiters_jobposts
 const registered_employee_details=db.registered_employee_details
@@ -9,14 +12,20 @@ const registered_recruiters=db.registered_recruiters
 const registered_employees_mediadata=db.registered_employees_mediadata
 const jwt =require('jsonwebtoken')
 
+
 const  {
     auth_register_employee,
     auth_register_employee_details,
     update_register_employee,
-    auth_applied_jobs
+    auth_applied_jobs,
+    auth_recruiter_register,
+    auth_recruiter_update, 
+    auth_recruiter_jobpost
 }=require('../validator/auth')
 
 const bcrypt=require('bcrypt')
+
+//regsiter employess
 exports.employees=async (req,res)=>{
     try{ 
         const valid=await auth_register_employee.validateAsync(req.body)
@@ -37,7 +46,7 @@ exports.employees=async (req,res)=>{
             data: data,
             message: "User is registered Successfully",
             token: jwt.sign({ id: data.id }, "SECRETKEY007", {
-                expiresIn: "60m",
+                expiresIn: "90m",
               }),
           });
         });
@@ -50,11 +59,11 @@ exports.employees=async (req,res)=>{
       }
     };
     
-
+//enter details of employees register
     exports.employee_details=(req,res)=>{
         console.log(req.body)
         const employee_details={
-            employees_details_Id:req.body.employees_details_Id,
+            id:req.body.id,
             contact:req.body.contact,
             nationality:req.body.nationality,
             state:req.body.state,
@@ -73,6 +82,22 @@ registered_employee_details.create(employee_details)
         })
     }
 
+    exports.userlogin = async (req, res, next) => {
+        passport.authenticate('local-employee', (err, user, info) => {
+          if (err) res.status(404).json(err);
+          if (user)
+            return res.status(200).json({
+              token: jwt.sign({ id: user.id }, "SECRETKEY007", {
+                expiresIn: "60m",
+              }),
+    data:user
+            });
+          if (info) return res.status(401).json(info);
+        })(req, res, next);
+      };
+      
+
+    //enter media of employees registeres
 exports.media_data=(req,res)=>{
     const media_data={
         employee_mediadata_id:req.body.employee_mediadata_id,
@@ -87,6 +112,8 @@ exports.media_data=(req,res)=>{
     })
 }
 
+
+//delete the employee
 exports.delete_employee= async (req,res)=>{
     const delete_employee=await 
     registered_employees
@@ -100,9 +127,12 @@ exports.delete_employee= async (req,res)=>{
     })
 }
 
+//get the employee
+
 exports.get_employees = async (req,res)=>{
     try{
-    const employees = await registered_employees.findOne({where :{id:req.params.id}});
+    const employees = await registered_employees.findOne({where: { id: id.id },
+      include:registered_employee_details });
     res.status(200).send({
         status:200,
         message:"details is fetch successfully ",
@@ -119,7 +149,7 @@ catch(error){
 
 }
 
-//update
+//update the employee
 
 exports.update_employee = async (req,res)=>{
     try{
@@ -145,7 +175,7 @@ catch(error){
 }
 
 
-
+//update employee deatils
 exports.update_details = async (req,res)=>{
     try{
  const update_details = await registered_employee_details.update({
@@ -257,23 +287,39 @@ exports.delete_postjobs= async (req,res)=>{
 
 
 //recruider register add
-exports.add_recruiters=(req,res)=>{
-    const add_recruiters={
+exports.add_recruiters=async (req,res)=>{
+   try {
+    
+     const encryptpass= await bcrypt.hash(req.body.password,10)  
+        const add_recruiters={
         id:req.body.id,
         company_name:req.body.company_name,
+        email:req.body.email,
         industry_experience:req.body.industry_experience,
         technologies:req.body.technologies,
         mobile_number:req.body.mobile_number,
-        company_website:req.body.company_websites
-       
+        company_website:req.body.company_website,
+         password:encryptpass
     }
     registered_recruiters.create(add_recruiters)
     .then(data=>{
-        res.send(data)
+        res.send({
+            data:data,
+            message:"registered sucessfully",
+            token: jwt.sign({ id: data.id }, "SECRETKEY1998", {
+                expiresIn: "60m",
+            })
+
+        })
     })
-    .catch(err=>{
-        res.send(err)
+}
+catch(error){
+    return res.status(401).send({
+        status:401,
+        message:"there is some error in the field",
+        err:error
     })
+}
 }
 
 // /update recruiter
@@ -319,7 +365,9 @@ exports.delete_recruiter= async (req,res)=>{
 //get recruiter
 exports.get_recruiter = async (req,res)=>{
     try{
-    const get_recruiter = await registered_recruiters.findOne({where :{id:req.params.id}});
+    const get_recruiter = await registered_recruiters.findOne(
+        {where: { id: id.id },
+      include:registered_employee_details });
     res.status(200).send({
         status:200,
         message:"recruiter are fetch successfully ",
@@ -335,6 +383,41 @@ catch(error){
 }
 }
 
+
+exports.recriterlogin = async (req, res, next) => {
+    passport.authenticate('local-recruiter', (err, recriter, info) => {
+      if (err) res.status(404).json(err);
+      if (recriter)
+        return res.status(200).json({
+          token: jwt.sign({ id: recriter.id }, "SECRETKEY1998", {
+            expiresIn: "60m",
+          }),
+data:recriter
+        });
+      if (info) return res.status(401).json(info);
+    })(req, res, next);
+  };
+  
+
+//applocaants
+  exports.applicants = async (req,res)=>{
+    try{
+    const details = await applied_jobs.findOne({where:{recruiter_id:id.id},
+        include:registered_employee_data_model});
+    return res.status(200).send({
+        status:200,
+        message:"all the job seekers",
+        data:details
+    })
+}
+catch(error){
+    return res.status(404).send({
+        status:400,
+        message:"there is some error",
+        error:error
+    })
+}
+}
 
 //applied jobs
 exports.appliedjobs=(req,res)=>{
@@ -355,3 +438,23 @@ exports.appliedjobs=(req,res)=>{
         res.send(err)
     })
 }
+
+//all ecruiter
+exports.allrecruiter = async (req, res) => {
+    try {
+      const details = await registered_recruiters.findAll({
+        where: { id: id.id }
+      });
+      return res.status(200).send({
+        status: 200,
+        message: "all the Recruiter",
+        data: details,
+      });
+    } catch (error) {
+      return res.status(401).send({
+        status: 401,
+        messgae: "there error",
+        error: error,
+      });
+    }
+  };

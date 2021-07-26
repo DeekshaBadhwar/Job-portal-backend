@@ -7,6 +7,7 @@ const Registered_employees_details =sequelize.define('Registered_employees_detai
             type:Sequelize.INTEGER,
             primaryKey:true,  
             autoIncrement:true
+            
     },
     contact:{
         type:Sequelize.INTEGER,

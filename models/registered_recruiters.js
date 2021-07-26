@@ -6,9 +6,13 @@ const Registered_recruiters =sequelize.define('Registered_recruiters',{
   
     id:{
         type:Sequelize.INTEGER,
-       primaryKey:true
+       primaryKey:true,
+       autoIncrement:true
     },
     company_name:{
+        type:Sequelize.STRING,
+    },
+   email:{
         type:Sequelize.STRING,
     },
     industry_experience:{
