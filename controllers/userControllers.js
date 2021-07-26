@@ -402,7 +402,7 @@ data:recriter
 //applocaants
   exports.applicants = async (req,res)=>{
     try{
-    const details = await applied_jobs.findOne({where:{recruiter_id:id.id},
+    const details = await applied_jobs.findOne({where:{id:id.id},
         include:registered_employee_data_model});
     return res.status(200).send({
         status:200,
